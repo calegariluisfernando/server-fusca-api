@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { blackListToken } from './app';
+import { activeTokens, blackListToken } from './app';
 import { AppError } from './error/AppError';
 import { TokenHandler } from "./utils/TokenHandler";
 
@@ -29,9 +29,13 @@ middleware.use('/', (request: Request, response: Response, next: NextFunction) =
 
                 throw new AppError('Access denied!', 401);
             }
+
         } else if (blackListToken.map(t => t['idToken']).includes(checkedToken.token['jti'])) {
 
             throw new AppError('Access denied!', 401);
+        } else if (!activeTokens.map(t => t['idToken']).includes(checkedToken.token['jti'])) {
+
+            throw new AppError('Access denied!', 401); 
         }
     }
 
