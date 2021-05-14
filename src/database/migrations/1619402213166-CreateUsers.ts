@@ -1,4 +1,5 @@
-import {MigrationInterface, QueryRunner, Table, TableIndex} from "typeorm";
+import {getCustomRepository, MigrationInterface, QueryRunner, Table, TableIndex} from "typeorm";
+import { UsersRepository } from "../../repositories/UsersRepository";
 
 export class CreateUsers1619402213166 implements MigrationInterface {
 
@@ -47,6 +48,11 @@ export class CreateUsers1619402213166 implements MigrationInterface {
                 ]
             })
         );
+
+        const usersRepository = getCustomRepository(UsersRepository);
+        const user = usersRepository.create({ name: 'Luis Fernando Calegari', email: 'calegariluisfernando@gmail.com' , password: '123'});
+
+        await usersRepository.save(user);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

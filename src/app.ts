@@ -6,6 +6,7 @@ import { AppError } from './error/AppError';
 import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
+import cors from 'cors';
 
 createConnection();
 const app = express();
@@ -19,10 +20,10 @@ var blackListToken = [];
 //        da Lista de Tokens Ativos             //
 //                                              //
 // ******************************************** //
-const timeCheckActiveTokens = 1000 * 60 * 1;
+const timeCheckActiveTokens = 1000 * 60 * .1;
 setInterval(() => {
 
-    console.log('Removendo Tokens Inválidos: Tokens Ativos');
+    console.log('Removendo Tokens Inválidos: Tokens Ativos', new Date().toLocaleTimeString());
     console.log('Quantidade Tokens Ativos:', activeTokens.length);
 
     const listID = blackListToken.map(item => item['idToken']);
@@ -45,10 +46,10 @@ setInterval(() => {
 //        da Black List de Tokens               //
 //                                              //
 // ******************************************** //
-const timeCheckBlacklistTokens = 1000 * 60 * 1;
+const timeCheckBlacklistTokens = 1000 * 60 * .1;
 setInterval(() => {
 
-    console.log('Removendo Tokens Inválidos: Black List Tokens');
+    console.log('Removendo Tokens Inválidos: Black List Tokens', new Date().toLocaleTimeString());
     console.log('Quantidade Tokens Black List:', blackListToken.length);
 
     blackListToken = blackListToken.filter(item => {
@@ -59,6 +60,12 @@ setInterval(() => {
 
 }, timeCheckBlacklistTokens);
 
+const allowedOrigins = ['http://localhost:3000'];
+const options: cors.CorsOptions = {
+    origin: allowedOrigins
+};
+
+app.use(cors(options))
 app.use(express.json());
 app.use(middleware);
 app.use(router);

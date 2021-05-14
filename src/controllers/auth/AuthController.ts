@@ -10,7 +10,8 @@ class AuthController {
 
     async login(request: Request, response: Response) {
 
-        const { email, password } = request.body;
+        const { email, password } = request.body; 
+        
         const userRespository = getCustomRepository(UsersRepository);
         const user = await userRespository.findOne({ email, password: Helpers.generateMd5(password) });
 
@@ -44,6 +45,25 @@ class AuthController {
         }
 
         return response.status(200).json({});
+    }
+
+    async checkToken(request: Request, response: Response) {
+
+        const { authorization } = request.headers;
+        let flagRetorno = false;
+        
+        if (typeof authorization !== 'undefined') {
+
+            const strToken                          = authorization.split(' ').pop();
+            const { status, token: tokenDecoded }   = TokenHandler.verify(strToken);
+
+            if (status) {
+
+                flagRetorno = activeTokens.map(item => item['idToken']).includes(tokenDecoded['jti']);
+            }
+        }
+
+        return response.json({ tokenValid: flagRetorno ? 1 : 0 });
     }
 }
 
