@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "vagrant up && ts-node-dev --transpile-only --ignore-watch node_modeules src/server.ts",
+    "dev": "vagrant up && ts-node-dev node_modules/typeorm/cli.js migration:run && ts-node-dev --transpile-only --ignore-watch node_modeules src/server.ts",
     "typeorm": "ts-node-dev node_modules/typeorm/cli.js"
   },
   "dependencies": {
