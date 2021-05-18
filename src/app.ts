@@ -11,6 +11,7 @@ import cors from 'cors';
 createConnection();
 const app = express();
 
+// Antes de Subir Aplicação Verificar se tem Tokens no Mongo
 var activeTokens = [];
 var blackListToken = [];
 

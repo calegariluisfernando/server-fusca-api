@@ -63,7 +63,7 @@ class AuthController {
             }
         }
 
-        return response.json({ tokenValid: flagRetorno ? 1 : 0 });
+        return response.json({ isValidToken: flagRetorno ? 1 : 0 });
     }
 }
 

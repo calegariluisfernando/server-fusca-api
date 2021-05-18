@@ -8,7 +8,7 @@ router.get('/', (req: Request, res: Response) => res.json({ 'home': 'Hello World
 
 router.post('/auth/login', authController.login);
 router.post('/auth/logout', authController.logout);
-router.post('/auth/checkToken', authController.checkToken);
+router.get('/auth/checkToken', authController.checkToken);
 
 export { router };
 
