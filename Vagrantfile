@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   config.vm.network "forwarded_port", guest: 3306, host: 3306
+  config.vm.network "forwarded_port", guest: 27017, host: 27017
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -66,30 +67,38 @@ Vagrant.configure("2") do |config|
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+  
+      MYSQLDCONFBKP=/etc/mysql/mysql.conf.d/mysqld.cnf.bak
+      MYSQLDCONF=/etc/mysql/mysql.conf.d/mysqld.cnf
+      
+      if test -e /"$MYSQLDCONFBKP"; then
+        debconf-set-selections <<< 'mysql-server mysql-server/root_password password toor'
+        debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password toor'
 
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password password toor'
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password toor'
+        apt-get update
 
-    apt-get update
+        apt-get -y install curl
+        apt-get -y install mysql-server
 
-    apt-get -y install curl
-    apt-get -y install mysql-server
+        # Realizando Backup do arquvo
+        cp $MYSQLDCONF "$MYSQLDCONF".bak
+        `sed -i 's/mysqlx-bind-address/# mysqlx-bind-address/g' "$MYSQLDCONF"`
+        `sed -i 's/bind-address/# bind-address/g' "$MYSQLDCONF"`
 
-    # Realizando Backup do arquvo
-    MYSQLDCONF=/etc/mysql/mysql.conf.d/mysqld.cnf
-    if test -f "$MYSQLDCONF"; then
+        echo "bind-address            = 0.0.0.0" >> $MYSQLDCONF
+        echo "mysqlx-bind-address     = 0.0.0.0" >> $MYSQLDCONF
 
-      cp $MYSQLDCONF "$MYSQLDCONF".bak
-      `sed -i 's/mysqlx-bind-address/# mysqlx-bind-address/g' "$MYSQLDCONF"`
-      `sed -i 's/bind-address/# bind-address/g' "$MYSQLDCONF"`
+        mysql -uroot -ptoor -e \
+          "CREATE DATABASE fusca; CREATE DATABASE fuscaTest; CREATE USER 'root'@'%' IDENTIFIED BY 'toor'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'; ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'toor'"
 
-      echo "bind-address            = 0.0.0.0" >> $MYSQLDCONF
-      echo "mysqlx-bind-address     = 0.0.0.0" >> $MYSQLDCONF
+        systemctl restart mysql
+      fi
 
-      mysql -uroot -ptoor -e \
-        "CREATE DATABASE fusca; CREATE DATABASE fuscaTest; CREATE USER 'root'@'%' IDENTIFIED BY 'toor'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'; ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'toor'"
-
-      systemctl restart mysql
-    fi
+      curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+      apt update
+      apt install mongodb-org -y
+      systemctl start mongod.service
+      systemctl enable mongod
   SHELL
 end

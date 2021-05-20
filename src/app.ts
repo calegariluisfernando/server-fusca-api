@@ -1,13 +1,16 @@
 import express, { NextFunction, Request, Response } from "express";
 import 'express-async-errors';
 import 'reflect-metadata';
+import cors from 'cors';
 import createConnection from './database';
 import { AppError } from './error/AppError';
 import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
-import cors from 'cors';
+import connectMongo from "./database/mongo";
 
+
+connectMongo();
 createConnection();
 const app = express();
 

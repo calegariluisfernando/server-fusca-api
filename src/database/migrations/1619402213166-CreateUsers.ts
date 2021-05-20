@@ -50,7 +50,7 @@ export class CreateUsers1619402213166 implements MigrationInterface {
         );
 
         const usersRepository = getCustomRepository(UsersRepository);
-        const user = usersRepository.create({ name: 'Luis Fernando Calegari', email: 'calegariluisfernando@gmail.com' , password: '123'});
+        const user = usersRepository.create({ name: 'Luis Fernando Calegari', email: 'calegari@lfc.com.br' , password: '123'});
 
         await usersRepository.save(user);
     }
