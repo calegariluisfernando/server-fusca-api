@@ -1,5 +1,6 @@
-import {BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {Helpers} from "../utils/Helpers";
+import {BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Helpers } from "../../utils/Helpers";
+
 
 @Entity({ name: 'User' })
 export class User {

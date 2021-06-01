@@ -1,0 +1,28 @@
+[{
+    "name": "mysql",
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "toor",
+    "database": "fusca",
+    "charset": "utf8mb4",
+    "logging": true,
+    "entities": [ "./src/models/**.ts" ],
+    "migrations": [ "./src/database/migrations/**.ts" ],
+    "cli": {
+        "migrationsDir": "./src/database/migrations"
+    }
+ }, {
+    "name": "mongo",
+    "type": "mongodb",
+    "host": "localhost",
+    "port": 27017,
+    "database": "fusca",
+    "logging": true,
+    "entities": [ "./src/models/mongo/**.ts" ],
+    "migrations": [ "./src/database/migrations/mongo/**.ts" ],
+    "cli": {
+        "migrationsDir": "./src/database/migrations/mongo"
+    }
+ }]

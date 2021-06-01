@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "./", "/vagrant", disabled: true
+  # config.vm.synced_folder "./", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
 
     # Customize the amount of memory on the VM:
     # vb.memory = "1024"
-    vb.name = "srv-mysql"
+    vb.name = "srv-bancos"
     vb.customize ["modifyvm", :id, "--groups", "/Meu Fusca"]
   end
   #
@@ -66,39 +66,5 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", inline: <<-SHELL
-  
-      MYSQLDCONFBKP=/etc/mysql/mysql.conf.d/mysqld.cnf.bak
-      MYSQLDCONF=/etc/mysql/mysql.conf.d/mysqld.cnf
-      
-      if test -e /"$MYSQLDCONFBKP"; then
-        debconf-set-selections <<< 'mysql-server mysql-server/root_password password toor'
-        debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password toor'
-
-        apt-get update
-
-        apt-get -y install curl
-        apt-get -y install mysql-server
-
-        # Realizando Backup do arquvo
-        cp $MYSQLDCONF "$MYSQLDCONF".bak
-        `sed -i 's/mysqlx-bind-address/# mysqlx-bind-address/g' "$MYSQLDCONF"`
-        `sed -i 's/bind-address/# bind-address/g' "$MYSQLDCONF"`
-
-        echo "bind-address            = 0.0.0.0" >> $MYSQLDCONF
-        echo "mysqlx-bind-address     = 0.0.0.0" >> $MYSQLDCONF
-
-        mysql -uroot -ptoor -e \
-          "CREATE DATABASE fusca; CREATE DATABASE fuscaTest; CREATE USER 'root'@'%' IDENTIFIED BY 'toor'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'; ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'toor'"
-
-        systemctl restart mysql
-      fi
-
-      curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-      apt update
-      apt install mongodb-org -y
-      systemctl start mongod.service
-      systemctl enable mongod
-  SHELL
+  config.vm.provision "shell", path: "VagrantScript.sh"
 end

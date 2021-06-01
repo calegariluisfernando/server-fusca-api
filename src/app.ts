@@ -2,16 +2,15 @@ import express, { NextFunction, Request, Response } from "express";
 import 'express-async-errors';
 import 'reflect-metadata';
 import cors from 'cors';
-import createConnection from './database';
 import { AppError } from './error/AppError';
 import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
-import connectMongo from "./database/mongo";
+import { createConnectionMongo, createConnectionMySQL } from "./database";
 
+createConnectionMySQL();
+createConnectionMongo();
 
-connectMongo();
-createConnection();
 const app = express();
 
 // Antes de Subir Aplicação Verificar se tem Tokens no Mongo

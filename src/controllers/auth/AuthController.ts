@@ -5,12 +5,16 @@ import { Helpers } from "../../utils/Helpers";
 import { AppError } from "../../error/AppError";
 import { TokenDataInterface, TokenHandler } from "../../utils/TokenHandler";
 import { activeTokens, blackListToken } from "../../app";
+import { ProfilesRepository } from '../../repositories/mongo/ProfileRepository';
 
 class AuthController {
 
     async login(request: Request, response: Response) {
 
         const { email, password } = request.body;
+
+        const repoProfile = getCustomRepository(ProfilesRepository);
+        console.log('Passei aqui!');
 
         const userRespository = getCustomRepository(UsersRepository);
         const user = await userRespository.findOne({ email, password: Helpers.generateMd5(password) });

@@ -32,7 +32,6 @@ class TokenHandler {
         ;
 
         const jwtid = v4();
-
         const token = jwt.sign(
             { id },
             process.env.SECRET_KEY,
@@ -64,8 +63,6 @@ class TokenHandler {
 
             return tokenData
         }
-
-
     }
 }
 
