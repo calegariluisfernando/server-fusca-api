@@ -24,7 +24,6 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   config.vm.network "forwarded_port", guest: 3306, host: 3306
-  config.vm.network "forwarded_port", guest: 27017, host: 27017
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -70,12 +69,14 @@ Vagrant.configure("2") do |config|
   
       MYSQLDCONFBKP=/etc/mysql/mysql.conf.d/mysqld.cnf.bak
       MYSQLDCONF=/etc/mysql/mysql.conf.d/mysqld.cnf
+
+      apt-get update
+      apt-get upgrade -y
       
-      if test -e /"$MYSQLDCONFBKP"; then
+      if [ ! -e "$MYSQLDCONFBKP" ]; then
+
         debconf-set-selections <<< 'mysql-server mysql-server/root_password password toor'
         debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password toor'
-
-        apt-get update
 
         apt-get -y install curl
         apt-get -y install mysql-server
@@ -93,12 +94,5 @@ Vagrant.configure("2") do |config|
 
         systemctl restart mysql
       fi
-
-      curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-      apt update
-      apt install mongodb-org -y
-      systemctl start mongod.service
-      systemctl enable mongod
   SHELL
 end

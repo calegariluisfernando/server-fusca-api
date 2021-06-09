@@ -7,10 +7,7 @@ import { AppError } from './error/AppError';
 import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
-import connectMongo from "./database/mongo";
 
-
-connectMongo();
 createConnection();
 const app = express();
 
