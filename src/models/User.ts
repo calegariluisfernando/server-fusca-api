@@ -1,5 +1,6 @@
-import {BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {Helpers} from "../utils/Helpers";
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Helpers } from "../utils/Helpers";
+import { Token } from "./Token";
 
 @Entity({ name: 'User' })
 export class User {
@@ -22,21 +23,10 @@ export class User {
     @CreateDateColumn()
     public created_at: Date;
 
-    /**
-     * @param id {number}
-     * @param name {string}
-     * @param email {string}
-     * @param password {string}
-     * @param isActive {boolean}
-     * @param created_at {Date}
-     */
-    constructor(id: number, name: string, email: string, password: string, isActive: boolean, created_at: Date) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.isActive = isActive;
-        this.created_at = created_at;
+    @OneToMany(() => Token, token => token.user)
+    public tokens: Token[]
+
+    constructor() {
     }
 
     @BeforeInsert()

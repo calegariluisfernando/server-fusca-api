@@ -7,59 +7,11 @@ import { AppError } from './error/AppError';
 import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
+import { Token } from "./models/Token";
+import { UpServerController } from "./controllers/server/UpServerController";
 
 createConnection();
 const app = express();
-
-// Antes de Subir Aplicação Verificar se tem Tokens no Mongo
-var activeTokens = [];
-var blackListToken = [];
-
-// ******************************************** //
-//                                              //    
-//      Removendo Tokens Inválidos da           //
-//        da Lista de Tokens Ativos             //
-//                                              //
-// ******************************************** //
-const timeCheckActiveTokens = 1000 * 60 * .1;
-setInterval(() => {
-
-    console.log('Removendo Tokens Inválidos: Tokens Ativos', new Date().toLocaleTimeString());
-    console.log('Quantidade Tokens Ativos:', activeTokens.length);
-
-    const listID = blackListToken.map(item => item['idToken']);
-    activeTokens = activeTokens.filter(item => !listID.includes(item['idToken']));
-
-    activeTokens = activeTokens.filter(item => {
-
-        let checkedToken = TokenHandler.verify(item['token']);
-        return checkedToken.status
-    });
-
-    
-
-}, timeCheckActiveTokens);
-
-
-// ******************************************** //
-//                                              //    
-//      Removendo Tokens Inválidos da           //
-//        da Black List de Tokens               //
-//                                              //
-// ******************************************** //
-const timeCheckBlacklistTokens = 1000 * 60 * .1;
-setInterval(() => {
-
-    console.log('Removendo Tokens Inválidos: Black List Tokens', new Date().toLocaleTimeString());
-    console.log('Quantidade Tokens Black List:', blackListToken.length);
-
-    blackListToken = blackListToken.filter(item => {
-
-        let checkedToken = TokenHandler.verify(item['token']);
-        return checkedToken.status
-    });
-
-}, timeCheckBlacklistTokens);
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = {
@@ -87,5 +39,42 @@ app.use((err: Error, request: Request,  response: Response, _next: NextFunction)
         message: `Internal server error ${err.message}`
     });
 });
+
+// Antes de Subir Aplicação Verificar se tem Tokens no Banco
+var activeTokens = [];
+var blackListToken = [];
+
+// ******************************************** //
+//                                              //    
+//      Removendo Tokens Inválidos da           //
+//        da Lista de Tokens Ativos             //
+//                                              //
+// ******************************************** //
+const timeCheckActiveTokens = 1000 * 60 * .1;
+setInterval(() => {
+
+    console.log('Removendo Tokens Inválidos: Tokens Ativos', new Date().toLocaleTimeString());
+    console.log('Quantidade Tokens Ativos:', activeTokens.length);
+
+    activeTokens = activeTokens.filter((t: Token) => TokenHandler.verify(t.strToken).status);
+
+}, timeCheckActiveTokens);
+
+
+// ******************************************** //
+//                                              //    
+//      Removendo Tokens Inválidos da           //
+//        da BlackList de Tokens                //
+//                                              //
+// ******************************************** //
+const timeCheckBlacklistTokens = 1000 * 60 * .1;
+setInterval(() => {
+
+    console.log('Removendo Tokens Inválidos: Black List Tokens', new Date().toLocaleTimeString());
+    console.log('Quantidade Tokens Black List:', blackListToken.length);
+
+    blackListToken = blackListToken.filter((t: Token) => TokenHandler.verify(t.strToken).status);
+
+}, timeCheckBlacklistTokens);
 
 export { app, activeTokens, blackListToken };

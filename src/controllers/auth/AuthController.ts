@@ -5,6 +5,8 @@ import { Helpers } from "../../utils/Helpers";
 import { AppError } from "../../error/AppError";
 import { TokenDataInterface, TokenHandler } from "../../utils/TokenHandler";
 import { activeTokens, blackListToken } from "../../app";
+import { TokensRepository } from '../../repositories/TokenRepository';
+import { Token } from '../../models/Token';
 
 class AuthController {
 
@@ -13,6 +15,7 @@ class AuthController {
         const { email, password } = request.body;
 
         const userRespository = getCustomRepository(UsersRepository);
+
         const user = await userRespository.findOne({ email, password: Helpers.generateMd5(password) });
 
         if (!user) {
@@ -23,8 +26,12 @@ class AuthController {
         const { id } = user;
         const dadosToken: TokenDataInterface = TokenHandler.sign({ id });
 
-        activeTokens.push({ idToken: dadosToken['idToken'], token: dadosToken['token'] });
+        const tokenRepository = getCustomRepository(TokensRepository);
+        const tokenModel = tokenRepository.create({ idtoken: dadosToken['idToken'], strToken: dadosToken['token'], user });
+        tokenRepository.save(tokenModel);
 
+        activeTokens.push(tokenModel);
+        
         return response.json({ token: dadosToken['token'] });
     }
 
@@ -38,9 +45,15 @@ class AuthController {
             const tokenDecoded = TokenHandler.verify(token);
             const tokenId = tokenDecoded.token['jti'];
 
-            if (tokenDecoded.status && !blackListToken.map(t => t['idToken']).includes(tokenId)) {
+            if (tokenDecoded.status && !blackListToken.map((t: Token) => t.idtoken).includes(tokenId)) {
 
-                blackListToken.push({ idToken: tokenDecoded.token['jti'], token });
+                const idxToken = activeTokens.findIndex((t: Token) => t.idtoken === tokenId);
+
+                if (idxToken >= 0) {
+
+                    blackListToken.push(activeTokens[idxToken]);
+                    activeTokens.splice(idxToken, 1);
+                }
             }
         }
 
@@ -59,7 +72,7 @@ class AuthController {
 
             if (status) {
 
-                flagRetorno = activeTokens.map(item => item['idToken']).includes(tokenDecoded['jti']);
+                flagRetorno = activeTokens.find((t: Token) => t.idtoken === tokenDecoded['jti']);
             }
         }
 
