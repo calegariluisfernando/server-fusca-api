@@ -20,6 +20,10 @@ middleware.use('/', (request: Request, response: Response, next: NextFunction) =
         }
 
         const checkedToken = TokenHandler.verify(authorization);
+
+
+        console.log('activeTokens', activeTokens);
+        
         if (checkedToken.status === false) {
 
             if (checkedToken.message) {

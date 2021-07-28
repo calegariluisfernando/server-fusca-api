@@ -22,6 +22,7 @@ export class AlterToken1623888897066 implements MigrationInterface {
 
         const table = await queryRunner.getTable("Token");
         const foreignKey = table.foreignKeys.find(fk => fk.columnNames.indexOf("idUser") !== -1);
+        
         await queryRunner.dropForeignKey(table, foreignKey);
         await queryRunner.dropColumn(table, "idUser");
     }

@@ -7,6 +7,9 @@ class UpServerController {
     async obterDadosToken() {
 
         const tokensRepository = getCustomRepository(TokensRepository);
+        const tokens = await tokensRepository.find({});
+
+        console.log('Tokens:', tokens);
         
     }
 }

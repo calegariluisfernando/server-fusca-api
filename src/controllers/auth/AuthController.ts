@@ -28,9 +28,14 @@ class AuthController {
 
         const tokenRepository = getCustomRepository(TokensRepository);
         const tokenModel = tokenRepository.create({ idtoken: dadosToken['idToken'], strToken: dadosToken['token'], user });
-        tokenRepository.save(tokenModel);
+        await tokenRepository.save(tokenModel);
 
-        activeTokens.push(tokenModel);
+        activeTokens.push({ 
+            idToken     : tokenModel.idtoken, 
+            strToken    : tokenModel.strToken, 
+            idUser      : tokenModel.user.id, 
+            createdAt   : tokenModel.created_at 
+        });
         
         return response.json({ token: dadosToken['token'] });
     }

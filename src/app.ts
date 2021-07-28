@@ -8,7 +8,6 @@ import { middleware } from './middlewares';
 import { router } from './routes';
 import { TokenHandler } from  './utils/TokenHandler';
 import { Token } from "./models/Token";
-import { UpServerController } from "./controllers/server/UpServerController";
 
 createConnection();
 const app = express();
@@ -41,8 +40,8 @@ app.use((err: Error, request: Request,  response: Response, _next: NextFunction)
 });
 
 // Antes de Subir Aplicação Verificar se tem Tokens no Banco
-var activeTokens = [];
-var blackListToken = [];
+var activeTokens    = [];
+var blackListToken  = [];
 
 // ******************************************** //
 //                                              //    
