@@ -1,14 +1,15 @@
-// import { app } from "./app";
-//
-// app.listen(3333, () => console.log('Servidor rodando 3333'));
-
+import express, { NextFunction, Request, Response } from "express";
+import 'express-async-errors';
+import 'reflect-metadata';
 import * as core from 'express-serve-static-core';
-import express from "express";
 import cors from "cors";
 import createConnection from "./database";
-import {UpServerController} from "./controllers/server/UpServerController";
-import {Token} from "./models/Token";
-import {TokenHandler} from "./utils/TokenHandler";
+import { UpServerController } from "./controllers/server/UpServerController";
+import { Token } from "./models/Token";
+import { TokenHandler } from "./utils/TokenHandler";
+import { middleware } from "./middlewares";
+import { router } from "./routes";
+import {AppError} from "./error/AppError";
 
 export default class ServerSetup {
 
@@ -58,8 +59,28 @@ export default class ServerSetup {
     private setupExpress() {
 
         this.app = express();
-        this.app.use(express.json());
         this.app.use(cors({ origin: this.allowedOrigins }));
+        this.app.use(express.json());
+
+        this.app.use(middleware);
+        this.app.use(router);
+
+        this.app.use((err: Error, request: Request,  response: Response, _next: NextFunction) => {
+
+            if (err instanceof AppError) {
+
+                return response.status(err.statusCode).json({
+
+                    message: err.message
+                });
+            }
+
+            return response.status(500).json({
+
+                status: 'Error',
+                message: `Internal server error ${err.message}`
+            });
+        });
     }
 
     private async setupDatabase(): Promise<void> {

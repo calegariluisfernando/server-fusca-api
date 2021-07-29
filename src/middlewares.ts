@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { activeTokens, blackListToken } from './app';
 import { AppError } from './error/AppError';
 import { TokenHandler } from "./utils/TokenHandler";
+import {activeTokens, blackListToken} from "./server";
 
 const middleware = Router();
 
@@ -14,7 +14,6 @@ middleware.use('/', (request: Request, response: Response, next: NextFunction) =
     if (!publicPaths.includes(path)) {
 
         const { authorization } = request.headers;
-
         if (typeof authorization === 'undefined') {
 
             throw new AppError('Access denied!', 401);

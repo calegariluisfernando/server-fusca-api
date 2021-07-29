@@ -3,6 +3,7 @@ import { Connection, createConnection as createConnectionTypeORM, getConnectionO
 const createConnection = async (): Promise<Connection> => {
 
     const defaultOptions = await getConnectionOptions();
+
     console.log("DefaultOptions:", defaultOptions);
 
     return await createConnectionTypeORM(

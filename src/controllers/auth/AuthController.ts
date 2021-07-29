@@ -4,9 +4,9 @@ import { getCustomRepository } from "typeorm";
 import { Helpers } from "../../utils/Helpers";
 import { AppError } from "../../error/AppError";
 import { TokenDataInterface, TokenHandler } from "../../utils/TokenHandler";
-import { activeTokens, blackListToken } from "../../app";
 import { TokensRepository } from '../../repositories/TokenRepository';
 import { Token } from '../../models/Token';
+import { activeTokens, blackListToken } from "../../server";
 
 class AuthController {
 
