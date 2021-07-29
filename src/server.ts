@@ -88,7 +88,6 @@ export default class ServerSetup {
 
         }, timeCheckList);
 
-
         // ******************************************** //
         //                                              //
         //      Removendo Tokens Inválidos da           //
