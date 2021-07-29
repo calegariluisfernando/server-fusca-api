@@ -14,15 +14,13 @@ middleware.use('/', (request: Request, response: Response, next: NextFunction) =
     if (!publicPaths.includes(path)) {
 
         const { authorization } = request.headers;
+
         if (typeof authorization === 'undefined') {
 
             throw new AppError('Access denied!', 401);
         }
 
         const checkedToken = TokenHandler.verify(authorization);
-
-
-        console.log('activeTokens', activeTokens);
         
         if (checkedToken.status === false) {
 

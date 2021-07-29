@@ -1,17 +1,18 @@
-import { Connection, createConnection, getConnectionOptions } from "typeorm";
+import { Connection, createConnection as createConnectionTypeORM, getConnectionOptions } from "typeorm";
 
-export default async (): Promise<Connection> => {
+const createConnection = async (): Promise<Connection> => {
 
     const defaultOptions = await getConnectionOptions();
     console.log("DefaultOptions:", defaultOptions);
-    
-    return createConnection(
-        
+
+    return await createConnectionTypeORM(
+
         Object.assign(defaultOptions, {
 
             database: process.env.NODE_ENV === 'test'
                 ? "fuscaTest" : defaultOptions.database
         })
-    )
+    );
+};
 
-}
+export default createConnection;

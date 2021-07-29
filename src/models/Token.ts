@@ -13,11 +13,11 @@ export class Token {
     @Column()
     public strToken: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: "timestamp" })
     public created_at: Date;
 
-    @ManyToOne(() => User, user => user.tokens)
-    @JoinColumn({ name: 'idUser' })
+    @ManyToOne(() => User, user => user.tokens, { eager: true })
+    @JoinColumn({ name: 'idUser'})
     user: User;
 
     constructor() {

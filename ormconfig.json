@@ -13,5 +13,6 @@
     "cli": {
         "entitiesDir": "./src/models",
         "migrationsDir": "./src/database/migrations"
-    }
+    },
+    "logging": true
  }
